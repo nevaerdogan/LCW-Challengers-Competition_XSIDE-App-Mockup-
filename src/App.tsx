@@ -12,14 +12,17 @@ type Screen = 'welcome' | 'getstarted' | 'main';
 function App() {
   const [scale, setScale] = useState(0.75);
   const [screen, setScreen] = useState<Screen>('welcome');
+  const [teamOpen, setTeamOpen] = useState(() => window.innerWidth >= 768);
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth < 768);
 
   useEffect(() => {
     const calc = () => {
       const vh = window.innerHeight;
       const vw = window.innerWidth;
-      const isMobile = vw < 768;
-      const widthFactor = isMobile ? 0.92 : 0.4;
-      const heightFactor = isMobile ? 0.95 : 0.88;
+      const mobile = vw < 768;
+      setIsMobile(mobile);
+      const widthFactor = mobile ? 0.92 : 0.4;
+      const heightFactor = mobile ? 0.95 : 0.88;
       const s = Math.min((vh * heightFactor) / PHONE_H, (vw * widthFactor) / PHONE_W, 1);
       setScale(s);
     };
@@ -124,33 +127,68 @@ function App() {
         </IPhoneFrame>
       </div>
 
-      {/* Team credit box */}
-      <div
-        style={{
-          position: 'absolute',
-          bottom: 20,
-          left: 20,
-          background: 'rgba(255,255,255,0.55)',
-          backdropFilter: 'blur(12px)',
-          WebkitBackdropFilter: 'blur(12px)',
-          borderRadius: 14,
-          padding: '12px 16px',
-          zIndex: 10,
-          border: '1px solid rgba(245,197,24,0.25)',
-          maxWidth: 200,
-        }}
-      >
-        <p style={{ fontSize: 11, fontWeight: 700, color: '#B8860B', marginBottom: 6, letterSpacing: 0.5 }}>Grup 5 — NEXT SIDE</p>
-        {[
-          'Neva Erdoğan',
-          'Aylin İpek Başar',
-          'Büşra Yılmaz',
-          'Ekin Yılmaz',
-          'Gülay Yılmaz',
-          'Yerkenaz Baizhigit',
-        ].map((name) => (
-          <p key={name} style={{ fontSize: 10, color: '#8B7355', lineHeight: 1.7, fontWeight: 500 }}>{name}</p>
-        ))}
+      {/* Team credit — toggle button + card */}
+      <div style={{ position: 'absolute', bottom: 16, left: 16, zIndex: 10 }}>
+        {!teamOpen && isMobile && (
+          <button
+            onClick={() => setTeamOpen(true)}
+            style={{
+              width: 36,
+              height: 36,
+              borderRadius: 10,
+              background: 'rgba(255,255,255,0.6)',
+              backdropFilter: 'blur(10px)',
+              WebkitBackdropFilter: 'blur(10px)',
+              border: '1px solid rgba(245,197,24,0.3)',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 3,
+              cursor: 'pointer',
+            }}
+          >
+            <span style={{ width: 14, height: 1.5, background: '#B8860B', borderRadius: 1 }} />
+            <span style={{ width: 14, height: 1.5, background: '#B8860B', borderRadius: 1 }} />
+            <span style={{ width: 14, height: 1.5, background: '#B8860B', borderRadius: 1 }} />
+          </button>
+        )}
+        {(teamOpen || !isMobile) && (
+          <div
+            style={{
+              background: 'rgba(255,255,255,0.65)',
+              backdropFilter: 'blur(14px)',
+              WebkitBackdropFilter: 'blur(14px)',
+              borderRadius: 14,
+              padding: '10px 14px 12px',
+              border: '1px solid rgba(245,197,24,0.25)',
+              maxWidth: 200,
+              animation: isMobile ? 'fadeIn 0.2s ease' : undefined,
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+              <p style={{ fontSize: 11, fontWeight: 700, color: '#B8860B', letterSpacing: 0.5 }}>Grup 5 — NEXT SIDE</p>
+              {isMobile && (
+                <button
+                  onClick={() => setTeamOpen(false)}
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 14, color: '#B8860B', lineHeight: 1, padding: 0 }}
+                >
+                  ✕
+                </button>
+              )}
+            </div>
+            {[
+              'Neva Erdoğan',
+              'Aylin İpek Başar',
+              'Büşra Yılmaz',
+              'Ekin Yılmaz',
+              'Gülay Yılmaz',
+              'Yerkenaz Baizhigit',
+            ].map((name) => (
+              <p key={name} style={{ fontSize: 10, color: '#8B7355', lineHeight: 1.7, fontWeight: 500 }}>{name}</p>
+            ))}
+          </div>
+        )}
       </div>
 
       <style>{`
@@ -183,6 +221,10 @@ function App() {
           25% { opacity: 0.6; transform: scale(1) rotate(45deg); color: #F5C518; }
           50% { opacity: 0.3; transform: scale(1.2) rotate(90deg); color: #FFD700; }
           75% { opacity: 0.7; transform: scale(0.8) rotate(135deg); color: #F5C518; }
+        }
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(6px); }
+          to { opacity: 1; transform: translateY(0); }
         }
         @keyframes dotFloat {
           0%, 100% { transform: translateY(0) scale(1); opacity: 0.5; }
