@@ -38,9 +38,10 @@ const bayramPicks = [
 interface Props {
   onNotifications: () => void;
   onAction?: (action: string) => void;
+  onStoryOverlay?: (active: boolean) => void;
 }
 
-export default function HomeTab({ onNotifications, onAction }: Props) {
+export default function HomeTab({ onNotifications, onAction, onStoryOverlay }: Props) {
   return (
     <div className="pb-8" style={{ background: '#FAFAFA' }}>
       {/* Header */}
@@ -74,7 +75,7 @@ export default function HomeTab({ onNotifications, onAction }: Props) {
 
       {/* Stories */}
       <div style={{ background: '#FFFFFF' }}>
-        <StoriesBar />
+        <StoriesBar onOverlayChange={onStoryOverlay} />
       </div>
 
       {/* Hero Banner */}

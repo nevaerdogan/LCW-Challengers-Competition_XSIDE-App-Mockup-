@@ -15,6 +15,7 @@ export default function MainApp() {
   const [showNotifications, setShowNotifications] = useState(false);
   const [showGame, setShowGame] = useState(false);
   const [gameInitialTab, setGameInitialTab] = useState<'quiz' | 'games'>('quiz');
+  const [storyOverlay, setStoryOverlay] = useState(false);
 
   const handleBannerAction = (action: string) => {
     switch (action) {
@@ -43,12 +44,12 @@ export default function MainApp() {
     if (showGame) return <GameTab initialTab={gameInitialTab} />;
 
     switch (activeTab) {
-      case 'home': return <HomeTab onNotifications={() => setShowNotifications(true)} onAction={handleBannerAction} />;
+      case 'home': return <HomeTab onNotifications={() => setShowNotifications(true)} onAction={handleBannerAction} onStoryOverlay={setStoryOverlay} />;
       case 'ai': return <AITab />;
       case 'cart': return <CartTab />;
       case 'favorites': return <FavoritesTab />;
       case 'profile': return <ProfileTab />;
-      default: return <HomeTab onNotifications={() => setShowNotifications(true)} onAction={handleBannerAction} />;
+      default: return <HomeTab onNotifications={() => setShowNotifications(true)} onAction={handleBannerAction} onStoryOverlay={setStoryOverlay} />;
     }
   };
 
@@ -61,7 +62,10 @@ export default function MainApp() {
     <div className="relative w-full h-full bg-white">
       <StatusBar />
 
-      <div className="absolute inset-0 top-[52px] bottom-[72px] overflow-y-auto overflow-x-hidden">
+      <div
+        className="absolute inset-0 top-[52px] bottom-[72px] overflow-x-hidden"
+        style={{ overflowY: storyOverlay ? 'hidden' : 'auto' }}
+      >
         {renderTab()}
       </div>
 

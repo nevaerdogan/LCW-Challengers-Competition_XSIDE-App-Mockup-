@@ -74,9 +74,25 @@ const stories = [
   },
 ];
 
-export default function StoriesBar() {
+interface StoriesBarProps {
+  onOverlayChange?: (active: boolean) => void;
+}
+
+export default function StoriesBar({ onOverlayChange }: StoriesBarProps) {
   const [openStory, setOpenStory] = useState<string | null>(null);
   const [showProducts, setShowProducts] = useState(false);
+
+  const openStoryById = (id: string | null) => {
+    setOpenStory(id);
+    setShowProducts(false);
+    onOverlayChange?.(id !== null);
+  };
+
+  const closeAll = () => {
+    setOpenStory(null);
+    setShowProducts(false);
+    onOverlayChange?.(false);
+  };
 
   const activeStory = stories.find((s) => s.id === openStory);
 
@@ -87,7 +103,7 @@ export default function StoriesBar() {
           {stories.map((s) => (
             <button
               key={s.id}
-              onClick={() => { setOpenStory(s.id); setShowProducts(false); }}
+              onClick={() => openStoryById(s.id)}
               className="flex flex-col items-center gap-1 min-w-[58px]"
             >
               <div
@@ -116,8 +132,8 @@ export default function StoriesBar() {
       {/* Story viewer overlay */}
       {activeStory && !showProducts && (
         <div
-          className="flex flex-col"
-          style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 70, background: '#000' }}
+          className="absolute inset-0 z-[70] flex flex-col"
+          style={{ background: '#000' }}
         >
           {/* Story image — full screen behind everything */}
           <div className="absolute inset-0" style={{ overflow: 'hidden' }}>
@@ -150,7 +166,7 @@ export default function StoriesBar() {
               <p style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)' }}>2 saat önce</p>
             </div>
             <button
-              onClick={() => { setOpenStory(null); setShowProducts(false); }}
+              onClick={closeAll}
               style={{ width: 32, height: 32, borderRadius: '50%', background: 'rgba(255,255,255,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#FFF', fontSize: 18 }}
             >
               ✕
@@ -163,8 +179,8 @@ export default function StoriesBar() {
               className="w-1/3 h-full"
               onClick={() => {
                 const idx = stories.findIndex((s) => s.id === openStory);
-                if (idx > 0) setOpenStory(stories[idx - 1].id);
-                else setOpenStory(null);
+                if (idx > 0) openStoryById(stories[idx - 1].id);
+                else closeAll();
               }}
             />
             <div className="w-1/3" />
@@ -172,8 +188,8 @@ export default function StoriesBar() {
               className="w-1/3 h-full"
               onClick={() => {
                 const idx = stories.findIndex((s) => s.id === openStory);
-                if (idx < stories.length - 1) setOpenStory(stories[idx + 1].id);
-                else setOpenStory(null);
+                if (idx < stories.length - 1) openStoryById(stories[idx + 1].id);
+                else closeAll();
               }}
             />
           </div>
@@ -194,8 +210,8 @@ export default function StoriesBar() {
       {/* Products page */}
       {activeStory && showProducts && (
         <div
-          className="flex flex-col"
-          style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 70, background: '#FAFAFA' }}
+          className="absolute inset-0 z-[70] flex flex-col"
+          style={{ background: '#FAFAFA' }}
         >
           {/* Header */}
           <div
