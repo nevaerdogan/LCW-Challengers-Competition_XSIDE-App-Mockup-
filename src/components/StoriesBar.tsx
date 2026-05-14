@@ -116,8 +116,8 @@ export default function StoriesBar() {
       {/* Story viewer overlay */}
       {activeStory && !showProducts && (
         <div
-          className="absolute inset-0 z-[70] flex flex-col"
-          style={{ background: '#FAFAFA' }}
+          className="flex flex-col"
+          style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 70, background: '#000' }}
         >
           {/* Story image — full screen behind everything */}
           <div className="absolute inset-0" style={{ overflow: 'hidden' }}>
@@ -194,8 +194,8 @@ export default function StoriesBar() {
       {/* Products page */}
       {activeStory && showProducts && (
         <div
-          className="absolute inset-0 z-[70] flex flex-col"
-          style={{ background: '#FAFAFA' }}
+          className="flex flex-col"
+          style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 70, background: '#FAFAFA' }}
         >
           {/* Header */}
           <div
