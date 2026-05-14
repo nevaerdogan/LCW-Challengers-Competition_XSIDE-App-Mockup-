@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import GameRewardScreen from '../GameRewardScreen';
 import CatchGame from '../CatchGame';
+import OutfitMatchGame from '../OutfitMatchGame';
+import WeeklyWheelGame from '../WeeklyWheelGame';
+import TrendPredictGame from '../TrendPredictGame';
 
 const quizQuestions = [
   {
@@ -49,11 +52,61 @@ const quizQuestions = [
   },
 ];
 
-const resultOutfits = [
-  { name: 'Crop Hoodie', price: '299 ₺', emoji: '👚' },
-  { name: 'Cargo Jogger', price: '449 ₺', emoji: '👖' },
-  { name: 'Platform Sneaker', price: '599 ₺', emoji: '👟' },
-];
+const styleProfiles: Record<string, { title: string; emoji: string; outfits: { name: string; price: string; emoji: string }[] }> = {
+  street: {
+    title: 'Street Casual 🔥',
+    emoji: '😎',
+    outfits: [
+      { name: 'Crop Hoodie', price: '299 ₺', emoji: '👚' },
+      { name: 'Cargo Jogger', price: '449 ₺', emoji: '👖' },
+      { name: 'Platform Sneaker', price: '599 ₺', emoji: '👟' },
+    ],
+  },
+  y2k: {
+    title: 'Y2K Retro 🦋',
+    emoji: '💛',
+    outfits: [
+      { name: 'Crop Top', price: '199 ₺', emoji: '👚' },
+      { name: 'Mini Etek', price: '349 ₺', emoji: '👗' },
+      { name: 'Chunky Sneaker', price: '699 ₺', emoji: '👟' },
+    ],
+  },
+  boho: {
+    title: 'Boho Chic 🌿',
+    emoji: '🌸',
+    outfits: [
+      { name: 'Oversize Gömlek', price: '349 ₺', emoji: '👕' },
+      { name: 'Wide Leg Jean', price: '499 ₺', emoji: '👖' },
+      { name: 'Hasır Çanta', price: '279 ₺', emoji: '👜' },
+    ],
+  },
+  smart: {
+    title: 'Smart & Chic 💼',
+    emoji: '✨',
+    outfits: [
+      { name: 'Blazer Ceket', price: '599 ₺', emoji: '🧥' },
+      { name: 'Kumaş Pantolon', price: '449 ₺', emoji: '👖' },
+      { name: 'Loafer', price: '549 ₺', emoji: '👞' },
+    ],
+  },
+};
+
+const getStyleResult = (answers: number[]) => {
+  const scores = { street: 0, y2k: 0, boho: 0, smart: 0 };
+  const q0Map: Record<number, (keyof typeof scores)[]> = { 0: ['boho', 'y2k'], 1: ['smart'], 2: ['street', 'y2k'], 3: ['boho'] };
+  const q1Map: Record<number, (keyof typeof scores)[]> = { 0: ['boho'], 1: ['smart'], 2: ['street'], 3: ['y2k'] };
+  const q2Map: Record<number, (keyof typeof scores)[]> = { 0: ['smart'], 1: ['y2k', 'street'], 2: ['street'], 3: ['boho', 'y2k'] };
+  const q3Map: Record<number, (keyof typeof scores)[]> = { 0: ['street'], 1: ['y2k'], 2: ['boho'], 3: ['smart'] };
+  const maps = [q0Map, q1Map, q2Map, q3Map];
+
+  answers.forEach((a, qi) => {
+    const targets = maps[qi][a] || [];
+    targets.forEach((t) => { scores[t] += 1; });
+  });
+
+  const best = (Object.keys(scores) as (keyof typeof scores)[]).reduce((a, b) => (scores[a] >= scores[b] ? a : b));
+  return styleProfiles[best];
+};
 
 const baseEmojis = ['👗', '👟', '👜', '👒', '🧥', '👖', '👚', '🧤'];
 const shuffleArray = (arr: string[]) => {
@@ -75,6 +128,7 @@ export default function GameTab({ initialTab = 'quiz' }: GameTabProps) {
   const [quizStep, setQuizStep] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [quizDone, setQuizDone] = useState(false);
+  const [quizAnswers, setQuizAnswers] = useState<number[]>([]);
   const [showGameplay, setShowGameplay] = useState(false);
   const [gameScore, setGameScore] = useState(340);
   const [gameCombo, setGameCombo] = useState(6);
@@ -82,9 +136,14 @@ export default function GameTab({ initialTab = 'quiz' }: GameTabProps) {
   const [selectedCells, setSelectedCells] = useState<number[]>([]);
   const [showReward, setShowReward] = useState(false);
   const [showCatchGame, setShowCatchGame] = useState(false);
+  const [showOutfitMatch, setShowOutfitMatch] = useState(false);
+  const [showWeeklyWheel, setShowWeeklyWheel] = useState(false);
+  const [showTrendPredict, setShowTrendPredict] = useState(false);
 
   const handleNext = () => {
     if (selectedAnswer === null) return;
+    const newAnswers = [...quizAnswers, selectedAnswer];
+    setQuizAnswers(newAnswers);
     if (quizStep < 3) {
       setQuizStep(quizStep + 1);
       setSelectedAnswer(null);
@@ -239,64 +298,67 @@ export default function GameTab({ initialTab = 'quiz' }: GameTabProps) {
       )}
 
       {/* Quiz Result */}
-      {activeGameTab === 'quiz' && quizDone && (
-        <div style={{ padding: '0 16px' }}>
-          <div
-            className="text-center"
-            style={{
-              background: '#FFFFFF',
-              borderRadius: 24,
-              padding: '32px 24px',
-              boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
-            }}
-          >
-            <div style={{ fontSize: 56, marginBottom: 8 }}>🎉</div>
-            <h3 style={{ fontSize: 22, fontWeight: 800, color: '#1A1A1A' }}>Senin Tarzın:</h3>
-            <h2 style={{ fontSize: 26, fontWeight: 900, color: '#F5C518', marginTop: 4 }}>Street Casual 🔥</h2>
-            <p style={{ fontSize: 13, color: '#8E8E8E', marginTop: 8 }}>Sana özel kombinler hazırladık!</p>
-
-            <div className="flex gap-3 overflow-x-auto" style={{ marginTop: 20, paddingBottom: 4 }}>
-              {resultOutfits.map((item, i) => (
-                <div
-                  key={i}
-                  className="flex-shrink-0"
-                  style={{ width: 110, background: '#FAFAFA', borderRadius: 16, padding: 12, textAlign: 'center' }}
-                >
-                  <span style={{ fontSize: 36 }}>{item.emoji}</span>
-                  <p style={{ fontSize: 12, fontWeight: 700, color: '#1A1A1A', marginTop: 6 }}>{item.name}</p>
-                  <p style={{ fontSize: 12, fontWeight: 800, color: '#F5C518' }}>{item.price}</p>
-                </div>
-              ))}
-            </div>
-
-            <button
-              onClick={() => { setQuizDone(false); setQuizStep(0); setSelectedAnswer(null); }}
-              className="w-full flex items-center justify-center active:scale-[0.96] transition-all duration-200"
+      {activeGameTab === 'quiz' && quizDone && (() => {
+        const result = getStyleResult(quizAnswers);
+        return (
+          <div style={{ padding: '0 16px' }}>
+            <div
+              className="text-center"
               style={{
-                marginTop: 20,
-                height: 52,
-                borderRadius: 26,
-                background: '#F5C518',
-                fontSize: 15,
-                fontWeight: 700,
-                color: '#1A1A1A',
-                boxShadow: '0 6px 20px rgba(245,197,24,0.4)',
+                background: '#FFFFFF',
+                borderRadius: 24,
+                padding: '32px 24px',
+                boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
               }}
             >
-              Kombinleri Gör →
-            </button>
-          </div>
+              <div style={{ fontSize: 56, marginBottom: 8 }}>{result.emoji}</div>
+              <h3 style={{ fontSize: 22, fontWeight: 800, color: '#1A1A1A' }}>Senin Tarzın:</h3>
+              <h2 style={{ fontSize: 26, fontWeight: 900, color: '#F5C518', marginTop: 4 }}>{result.title}</h2>
+              <p style={{ fontSize: 13, color: '#8E8E8E', marginTop: 8 }}>Sana özel kombinler hazırladık!</p>
 
-          <div className="flex justify-center" style={{ marginTop: 16 }}>
-            <button
-              onClick={() => { setQuizDone(false); setQuizStep(0); setSelectedAnswer(null); }}
-              style={{ fontSize: 13, fontWeight: 600, color: '#8E8E8E' }}
-            >
-              Tekrar Çöz
-            </button>
+              <div className="flex gap-3 overflow-x-auto" style={{ marginTop: 20, paddingBottom: 4 }}>
+                {result.outfits.map((item, i) => (
+                  <div
+                    key={i}
+                    className="flex-shrink-0"
+                    style={{ width: 110, background: '#FAFAFA', borderRadius: 16, padding: 12, textAlign: 'center' }}
+                  >
+                    <span style={{ fontSize: 36 }}>{item.emoji}</span>
+                    <p style={{ fontSize: 12, fontWeight: 700, color: '#1A1A1A', marginTop: 6 }}>{item.name}</p>
+                    <p style={{ fontSize: 12, fontWeight: 800, color: '#F5C518' }}>{item.price}</p>
+                  </div>
+                ))}
+              </div>
+
+              <button
+                onClick={() => { setQuizDone(false); setQuizStep(0); setSelectedAnswer(null); setQuizAnswers([]); }}
+                className="w-full flex items-center justify-center active:scale-[0.96] transition-all duration-200"
+                style={{
+                  marginTop: 20,
+                  height: 52,
+                  borderRadius: 26,
+                  background: '#F5C518',
+                  fontSize: 15,
+                  fontWeight: 700,
+                  color: '#1A1A1A',
+                  boxShadow: '0 6px 20px rgba(245,197,24,0.4)',
+                }}
+              >
+                Kombinleri Gör →
+              </button>
+            </div>
+
+            <div className="flex justify-center" style={{ marginTop: 16 }}>
+              <button
+                onClick={() => { setQuizDone(false); setQuizStep(0); setSelectedAnswer(null); setQuizAnswers([]); }}
+                style={{ fontSize: 13, fontWeight: 600, color: '#8E8E8E' }}
+              >
+                Tekrar Çöz
+              </button>
+            </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* MİNİ OYUNLAR */}
       {activeGameTab === 'games' && !showGameplay && (
@@ -376,9 +438,9 @@ export default function GameTab({ initialTab = 'quiz' }: GameTabProps) {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
             {[
               { key: 'stilyakala', title: 'Stil\nYakala', subtitle: 'Emojileri yakala', accent: '#FF4757', badge: 'POPÜLER 🔥', badgeBg: '#FF4757', badgeColor: '#FFF', emoji: '🛒', points: '+200 Puan', onPress: () => setShowCatchGame(true) },
-              { key: 'kombinesle', title: 'Kombin\nEşle', subtitle: 'Doğru parçaları bul', accent: '#9B59B6', badge: null, badgeBg: '', badgeColor: '', emoji: '🃏', points: '+75 Puan', onPress: () => {} },
-              { key: 'gunlukcark', title: 'Günlük\nÇark', subtitle: 'Sürpriz ödül', accent: '#F39C12', badge: 'GÜNLÜK', badgeBg: '#E8F5E9', badgeColor: '#2E7D32', emoji: '🎡', points: 'Sürpriz', onPress: () => {} },
-              { key: 'trendtahmin', title: 'Trend\nTahmin', subtitle: 'Bu sezon ne moda?', accent: '#1ABC9C', badge: null, badgeBg: '', badgeColor: '', emoji: '🔮', points: '+50 Puan', onPress: () => {} },
+              { key: 'kombinesle', title: 'Kombin\nEşle', subtitle: 'Doğru parçaları bul', accent: '#9B59B6', badge: 'YENİ ✨', badgeBg: '#9B59B6', badgeColor: '#FFF', emoji: '🃏', points: '+75 Puan', onPress: () => setShowOutfitMatch(true) },
+              { key: 'haftalik-cark', title: 'Haftalık\nÇark', subtitle: 'Sürpriz ödül', accent: '#F39C12', badge: 'HAFTALIK', badgeBg: '#FFF3E0', badgeColor: '#E65100', emoji: '🎡', points: 'Sürpriz', onPress: () => setShowWeeklyWheel(true) },
+              { key: 'trendtahmin', title: 'Trend\nTahmin', subtitle: 'Bu sezon ne moda?', accent: '#1ABC9C', badge: 'TREND 🔮', badgeBg: '#E0F7FA', badgeColor: '#00695C', emoji: '🔮', points: '+50 Puan', onPress: () => setShowTrendPredict(true) },
             ].map((game) => (
               <button
                 key={game.key}
@@ -549,6 +611,30 @@ export default function GameTab({ initialTab = 'quiz' }: GameTabProps) {
         <CatchGame
           onClose={() => setShowCatchGame(false)}
           onFinish={() => { setShowCatchGame(false); setShowReward(true); }}
+        />
+      )}
+
+      {/* KOMBİN EŞLE */}
+      {showOutfitMatch && (
+        <OutfitMatchGame
+          onClose={() => setShowOutfitMatch(false)}
+          onFinish={() => { setShowOutfitMatch(false); setShowReward(true); }}
+        />
+      )}
+
+      {/* HAFTALIK ÇARK */}
+      {showWeeklyWheel && (
+        <WeeklyWheelGame
+          onClose={() => setShowWeeklyWheel(false)}
+          onFinish={() => { setShowWeeklyWheel(false); setShowReward(true); }}
+        />
+      )}
+
+      {/* TREND TAHMİN */}
+      {showTrendPredict && (
+        <TrendPredictGame
+          onClose={() => setShowTrendPredict(false)}
+          onFinish={() => { setShowTrendPredict(false); setShowReward(true); }}
         />
       )}
 

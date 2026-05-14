@@ -91,7 +91,7 @@ export default function GameRewardScreen({ onClose, onGoHome }: GameRewardScreen
             TEBRİKLER! 🎉
           </h1>
           <p style={{ fontSize: 13, color: '#8E7A3A', marginTop: 4, opacity: mounted ? 1 : 0, transition: 'opacity 0.5s ease-out 0.3s' }}>
-            Stil Rush'ı tamamladın!
+            Oyunu tamamladın!
           </p>
           <div
             className="flex items-center justify-center"
