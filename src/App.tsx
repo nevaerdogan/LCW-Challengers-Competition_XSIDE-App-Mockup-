@@ -127,6 +127,44 @@ function App() {
         </IPhoneFrame>
       </div>
 
+      {/* QR Code — right side */}
+      {!isMobile && (
+        <div
+          style={{
+            position: 'absolute',
+            right: 48,
+            top: '50%',
+            transform: 'translateY(-50%)',
+            zIndex: 2,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: 10,
+          }}
+        >
+          <div
+            style={{
+              background: 'rgba(255,255,255,0.7)',
+              backdropFilter: 'blur(14px)',
+              WebkitBackdropFilter: 'blur(14px)',
+              borderRadius: 20,
+              padding: 14,
+              border: '1px solid rgba(245,197,24,0.3)',
+              boxShadow: '0 4px 20px rgba(0,0,0,0.06)',
+            }}
+          >
+            <img
+              src={new URL('./assets/QR.png', import.meta.url).href}
+              alt="QR Code"
+              style={{ width: 180, height: 180, borderRadius: 12 }}
+            />
+          </div>
+          <p style={{ fontSize: 11, fontWeight: 700, color: '#B8860B', letterSpacing: 0.5, textAlign: 'center' }}>
+            MockUp'ımızı Deneyin
+          </p>
+        </div>
+      )}
+
       {/* Team credit — toggle button + card */}
       <div style={{ position: 'absolute', bottom: 16, left: 16, zIndex: 10 }}>
         {!teamOpen && isMobile && (
