@@ -49,7 +49,6 @@ export default function OutfitMatchGame({ onClose, onFinish }: Props) {
 
   const outfit = outfits[round];
   const piece = outfit.pieces[pieceIdx];
-  const isLeft = Math.random() > 0.5;
 
   const [options] = useState(() =>
     outfits.map((o) =>
@@ -58,7 +57,6 @@ export default function OutfitMatchGame({ onClose, onFinish }: Props) {
   );
 
   const currentOptions = options[round][pieceIdx];
-  const leftIsCorrect = currentOptions[0] === piece.correct;
 
   const handlePick = (choice: string) => {
     if (picked) return;
