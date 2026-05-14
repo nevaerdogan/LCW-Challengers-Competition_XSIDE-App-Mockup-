@@ -3,6 +3,7 @@ import StatusBar from './StatusBar';
 import BottomNav from './BottomNav';
 import FloatingButton from './FloatingButton';
 import NotificationsSheet from './NotificationsSheet';
+import QRScannerScreen from './QRScannerScreen';
 import HomeTab from './tabs/HomeTab';
 import GameTab from './tabs/GameTab';
 import CartTab from './tabs/CartTab';
@@ -16,6 +17,7 @@ export default function MainApp() {
   const [showGame, setShowGame] = useState(false);
   const [gameInitialTab, setGameInitialTab] = useState<'quiz' | 'games'>('quiz');
   const [storyOverlay, setStoryOverlay] = useState(false);
+  const [showQR, setShowQR] = useState(false);
 
   const handleBannerAction = (action: string) => {
     switch (action) {
@@ -44,17 +46,22 @@ export default function MainApp() {
     if (showGame) return <GameTab initialTab={gameInitialTab} />;
 
     switch (activeTab) {
-      case 'home': return <HomeTab onNotifications={() => setShowNotifications(true)} onAction={handleBannerAction} onStoryOverlay={setStoryOverlay} />;
+      case 'home': return <HomeTab onNotifications={() => setShowNotifications(true)} onAction={handleBannerAction} onStoryOverlay={setStoryOverlay} onProfile={() => { setShowGame(false); setActiveTab('profile'); }} />;
       case 'ai': return <AITab />;
       case 'cart': return <CartTab />;
       case 'favorites': return <FavoritesTab />;
       case 'profile': return <ProfileTab />;
-      default: return <HomeTab onNotifications={() => setShowNotifications(true)} onAction={handleBannerAction} onStoryOverlay={setStoryOverlay} />;
+      default: return <HomeTab onNotifications={() => setShowNotifications(true)} onAction={handleBannerAction} onStoryOverlay={setStoryOverlay} onProfile={() => { setShowGame(false); setActiveTab('profile'); }} />;
     }
   };
 
   const handleTabChange = (tab: string) => {
+    if (tab === 'qr') {
+      setShowQR(true);
+      return;
+    }
     setShowGame(false);
+    setShowQR(false);
     setActiveTab(tab);
   };
 
@@ -81,6 +88,11 @@ export default function MainApp() {
       )}
 
       <BottomNav activeTab={showGame ? '' : activeTab} onTabChange={handleTabChange} />
+
+      {/* QR Scanner overlay */}
+      {showQR && (
+        <QRScannerScreen onClose={() => setShowQR(false)} />
+      )}
 
       {/* Notifications overlay */}
       {showNotifications && (

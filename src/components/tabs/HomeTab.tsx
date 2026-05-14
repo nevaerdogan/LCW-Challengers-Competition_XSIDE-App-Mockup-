@@ -1,4 +1,4 @@
-import { Bell, Search } from 'lucide-react';
+import { Bell, Search, User } from 'lucide-react';
 import StoriesBar from '../StoriesBar';
 import HeroBanner from '../HeroBanner';
 
@@ -39,9 +39,10 @@ interface Props {
   onNotifications: () => void;
   onAction?: (action: string) => void;
   onStoryOverlay?: (active: boolean) => void;
+  onProfile?: () => void;
 }
 
-export default function HomeTab({ onNotifications, onAction, onStoryOverlay }: Props) {
+export default function HomeTab({ onNotifications, onAction, onStoryOverlay, onProfile }: Props) {
   return (
     <div className="pb-8" style={{ background: '#FAFAFA' }}>
       {/* Header */}
@@ -69,6 +70,13 @@ export default function HomeTab({ onNotifications, onAction, onStoryOverlay }: P
               className="absolute"
               style={{ top: 2, right: 3, width: 6, height: 6, borderRadius: '50%', background: '#EF4444' }}
             />
+          </button>
+          <button
+            onClick={onProfile}
+            className="flex items-center justify-center"
+            style={{ width: 32, height: 32, borderRadius: '50%', background: '#F5F5F5' }}
+          >
+            <User size={17} strokeWidth={1.8} color="#1A1A1A" />
           </button>
         </div>
       </div>

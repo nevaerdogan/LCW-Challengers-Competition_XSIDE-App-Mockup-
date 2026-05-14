@@ -1,4 +1,4 @@
-import { Heart, ShoppingBag, User } from 'lucide-react';
+import { Heart, ShoppingBag, ScanLine } from 'lucide-react';
 
 interface BottomNavProps {
   activeTab: string;
@@ -10,7 +10,7 @@ const tabs = [
   { id: 'favorites', icon: Heart, label: 'Favoriler' },
   { id: 'home', label: '' },
   { id: 'cart', icon: ShoppingBag, label: 'Sepetim' },
-  { id: 'profile', icon: User, label: 'Hesabım' },
+  { id: 'qr', icon: ScanLine, label: 'QR Okut' },
 ];
 
 export default function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
